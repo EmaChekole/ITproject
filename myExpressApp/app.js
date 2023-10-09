@@ -7,13 +7,17 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var mysql= require('mysql');
+//var mysql= require('mysql');
+var mysql = require('mysql2');
 
 var app = express();
 
 var dbConnectionPool = mysql.createPool({
   host: 'localhost',
-  database: 'unidb'
+  database: 'unidb',
+  port: '3306',
+  user:'root',
+  password: 'S202411s'
 });
 
 app.use(function(req, res, next){
