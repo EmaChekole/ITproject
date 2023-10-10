@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* Function to connect to DB and use query*/
 function useQuery(query,req,res) {
-  
+  console.log("Query:    " + query);
   req.pool.getConnection( function(err,connection) {
     if (err) {
       console.log(err);
@@ -30,10 +30,25 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/buildings', function(req, res, next) {
-  console.log("buildings has been called");
   var query = "SELECT Building_id, Building_name FROM building";
   useQuery(query,req,res);
 });
+
+router.get('/subjectAreas', function(req, res, next) {
+  //should get called every time when the page loads
+  var query = "SELECT Major_name FROM major";
+  useQuery(query,req,res);
+});
+
+router.get('/subjects', function(req, res, next) {
+  //called when user selects a subject area. 
+  //this will return all subjects in that subject area
+
+  //var query = "SELECT Subject_name FROM subject WHERE Major_id = " + String(req);
+  var query = "SELECT Subject_name FROM subject WHERE Major_id = " + "1"; //temporary until client javascript is implemented
+  useQuery(query,req,res);
+});
+
 
 
 module.exports = router;
