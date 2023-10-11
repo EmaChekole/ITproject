@@ -28,7 +28,6 @@ document.getElementById('e13602').addEventListener('input', function() {
     var results = document.getElementById('subjectAreaResults');
     var subSectionInput = document.getElementById('subSection');
 
-
     var subjectAreas = ['COMP SCI - Computer Science'];
 
     results.innerHTML = '';
@@ -108,27 +107,37 @@ document.getElementById('subSection').addEventListener('input', function() {
 		const obtainingMediaTextarea = document.getElementById("e13587");
 		const newAppPrompt = document.getElementById('newAppPrompt');
 
-		const applications = [
-			{ name: "Application 1", supplier: "Supplier for App1", media: "Method for obtaining App1 media" },
-			{ name: "Application 2", supplier: "Supplier for App2", media: "Method for obtaining App2 media" },
-			{ name: "Application 3", supplier: "Supplier for App3", media: "Method for obtaining App3 media" },
-			{ name: "Other" }
-		];
+		const applications = [];
+		let xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			if (this.readyState == 4 && this.status == 200) {
+				const lis = this.responseText
+				const software_list = JSON.parse(lis);
+				for (let i of software_list) {
+					applications.push(i);
+					console.log(i.software_name);
+				}
+			}
+		};
+
+		xhttp.open("GET", "/softwares", true);
+		xhttp.send();
+		//applications.push(JSON.parse([{"software_name":"other","software_supplier":""}]));
 
 		appInput.addEventListener('input', function() {
 			const inputValue = this.value.toLowerCase();
 			resultsDiv.innerHTML = '';
 
 			for (let app of applications) {
-				if (app.name.toLowerCase().includes(inputValue)) {
+				if (app.software_name.toLowerCase().includes(inputValue)) {
 					let div = document.createElement('div');
-					div.innerText = app.name;
+					div.innerText = app.software_name;
 					div.addEventListener('click', function() {
-						appInput.value = app.name;
+						appInput.value = app.software_name;
 						resultsDiv.style.display = 'none';
 						newAppPrompt.style.display = 'none';
 
-						if (app.name === "Other") {
+						if (app.software_name === "Other") {
 							appNameInput.removeAttribute("disabled");
 							softwareSupplierInput.removeAttribute("disabled");
 							obtainingMediaTextarea.removeAttribute("disabled");
@@ -139,8 +148,8 @@ document.getElementById('subSection').addEventListener('input', function() {
 							appNameInput.setAttribute("disabled", "disabled");
 							softwareSupplierInput.removeAttribute("disabled");
 							obtainingMediaTextarea.removeAttribute("disabled");
-							appNameInput.value = app.name;
-							softwareSupplierInput.value = app.supplier;
+							appNameInput.value = app.software_name;
+							softwareSupplierInput.value = app.software_supplier;
 							obtainingMediaTextarea.value = app.media;
 						}
 					});

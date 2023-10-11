@@ -51,7 +51,7 @@ router.get('/subjects', function(req, res, next) {
 
 router.get('/softwares', function(req, res, next) {
   //should get called every time to show all available software
-  var query = "SELECT software_name, software_supplier, price FROM software";
+  var query = "SELECT software_name, software_supplier FROM software";
   useQuery(query,req,res);
 });
 
