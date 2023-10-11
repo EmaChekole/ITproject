@@ -49,6 +49,18 @@ router.get('/subjects', function(req, res, next) {
   useQuery(query,req,res);
 });
 
+router.get('/users', function(req, res, next) {
+  //should get called after a subject is chosen
+  var query = "SELECT student_enrol FROM subject";
+  useQuery(query,req,res);
+});
+
+router.get('/softwares', function(req, res, next) {
+  //should get called after a subject is chosen
+  var query = "SELECT software_name, software_supplier, price FROM software";
+  useQuery(query,req,res);
+});
+
 
 
 module.exports = router;

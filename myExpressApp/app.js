@@ -15,9 +15,9 @@ var app = express();
 var dbConnectionPool = mysql.createPool({
   host: 'localhost',
   database: 'unidb',
-  port: '<your port for your db>',
-  user:'<your user name for your db>',
-  password: '<your password>'
+  port: '3306',
+  user:'root',
+  password: ''
 });
 
 app.use(function(req, res, next){
