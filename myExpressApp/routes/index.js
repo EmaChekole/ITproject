@@ -45,18 +45,12 @@ router.get('/subjects', function(req, res, next) {
   //this will return all subjects in that subject area
 
   //var query = "SELECT Subject_name FROM subject WHERE Major_id = " + String(req);
-  var query = "SELECT Subject_name FROM subject WHERE Major_id = " + "1"; //temporary until client javascript is implemented
-  useQuery(query,req,res);
-});
-
-router.get('/users', function(req, res, next) {
-  //should get called after a subject is chosen
-  var query = "SELECT student_enrol FROM subject";
+  var query = "SELECT Subject_name, student_enrol FROM subject WHERE Major_id = " + "1"; //temporary until client javascript is implemented
   useQuery(query,req,res);
 });
 
 router.get('/softwares', function(req, res, next) {
-  //should get called after a subject is chosen
+  //should get called every time to show all available software
   var query = "SELECT software_name, software_supplier, price FROM software";
   useQuery(query,req,res);
 });
