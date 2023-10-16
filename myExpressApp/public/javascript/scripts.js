@@ -28,7 +28,15 @@ document.getElementById('e13602').addEventListener('input', function() {
     var results = document.getElementById('subjectAreaResults');
     var subSectionInput = document.getElementById('subSection');
 
-    var subjectAreas = ['COMP SCI - Computer Science'];
+
+    
+    var subjectAreas = [];
+    fetch('/majors')
+    .then(response => response.json())
+    .then(data => {
+        subjectAreas = data.map(item => item.Major_name);
+    });
+        
 
     results.innerHTML = '';
     var inputValue = this.value.toLowerCase();
@@ -190,60 +198,80 @@ document.getElementById('subSection').addEventListener('input', function() {
 
 /*-------------------Adding Rooms---------------------------------------------*/
 
-	document.addEventListener("DOMContentLoaded", function() {
-		const roomSearchInput = document.getElementById("room_search");
-		const roomResultsDiv = document.getElementById("room_results");
-		const roomListUl = document.getElementById("room_list");
+document.addEventListener("DOMContentLoaded", function() {
+    const roomListButton = document.getElementById("room_list_button");
+    const roomResultsDiv = document.getElementById("room_results");
+    const roomListUl = document.getElementById("room_list");
 
-		const rooms = [
-			"Lab 1",
-			"Lab 2",
-			"Lab 3",
-		];
+    // Initialize rooms as an empty array
+    let rooms = [];
 
-		roomSearchInput.addEventListener("input", function() {
-			const searchTerm = this.value.toLowerCase();
-			roomResultsDiv.innerHTML = '';
+    function roomAlreadyAdded(room) {
+        const existingItems = roomListUl.querySelectorAll("li");
+        for (let item of existingItems) {
+            if (item.firstChild.nodeValue === room) {  // This checks only the room name, ignoring child elements like buttons
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
-			const filteredRooms = rooms.filter(room => room.toLowerCase().includes(searchTerm));
+    function addRoomToList(room) {
+        // Check if the room is already added. If it is, simply return.
+        if (roomAlreadyAdded(room)) {
+            return;
+        }
+    
+        const li = document.createElement("li");
+        li.textContent = room;
+    
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = function() {
+            roomListUl.removeChild(li);
+            renderRoomList();  // Update the room list after removing an item
+        };
+    
+        li.appendChild(removeBtn);
+        roomListUl.appendChild(li);
+    }
 
-			filteredRooms.forEach(room => {
-				const resultDiv = document.createElement("div");
-				resultDiv.textContent = room;
-				resultDiv.onclick = function() {
-					if (!roomAlreadyAdded(room)) {
-						addRoomToList(room);
-					}
-					roomSearchInput.value = '';
-					roomResultsDiv.innerHTML = '';
-				};
-				roomResultsDiv.appendChild(resultDiv);
-			});
-		});
+    function renderRoomList() {
+        roomResultsDiv.innerHTML = '';
 
-		function roomAlreadyAdded(room) {
-			const existingItems = roomListUl.querySelectorAll("li");
-			for (let item of existingItems) {
-				if (item.textContent === room) {
-					return true;
-				}
-			}
-			return false;
-		}
+        rooms.forEach(room => {
+            const resultDiv = document.createElement("div");
+            resultDiv.textContent = room;
+            
+            if (roomAlreadyAdded(room)) {
+                resultDiv.style.opacity = "0.5";
+                resultDiv.style.pointerEvents = "none";  // Disables click events on this element
+            } else {
+                resultDiv.onclick = function() {
+                    addRoomToList(room);
+                    renderRoomList();  // Update the room list after adding an item
+                };
+            }
 
-		function addRoomToList(room) {
-			const li = document.createElement("li");
-			li.textContent = room;
+            roomResultsDiv.appendChild(resultDiv);
+        });
+    }
 
-			
-			const removeBtn = document.createElement("button");
-			removeBtn.textContent = "Remove";
-			removeBtn.onclick = function() {
-				roomListUl.removeChild(li);
-			};
-			
-			li.appendChild(removeBtn);
-			roomListUl.appendChild(li);
-		}
-	});
+    // Fetch rooms from the new API endpoint
+    fetch("/rooms")
+    
+    .then(response => response.json())
+    .then(data => {
+        // Populate the rooms array with the fetched building names
+        rooms = data.map(item => item.Building_name + " - Room " + item.room_number);
+
+        // Render the room list for the first time when button is clicked
+        roomListButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            renderRoomList();
+        });
+    });
+
+});
 /*------------------------------------------------------------------*/

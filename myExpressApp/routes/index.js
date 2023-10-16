@@ -55,6 +55,14 @@ router.get('/softwares', function(req, res, next) {
   useQuery(query,req,res);
 });
 
+router.get('/majors', function(req, res, next) {
+  var query = "SELECT Major_name FROM major";
+  useQuery(query,req,res);
+});
 
+router.get('/rooms', function(req, res, next) {
+  var query = "SELECT r.room_number, b.Building_name FROM room r JOIN building b ON r.building_id = b.Building_id";
+  useQuery(query, req, res);
+});
 
 module.exports = router;
