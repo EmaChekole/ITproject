@@ -35,7 +35,7 @@ document.getElementById('e13602').addEventListener('input', function() {
     .then(response => response.json())
     .then(data => {
         subjectAreas = data.map(item => item.Major_name);
-    });
+    
         
 
     results.innerHTML = '';
@@ -94,7 +94,7 @@ document.getElementById('subSection').addEventListener('input', function() {
             results.appendChild(div);
         }
     }
-
+    });
     results.style.display = results.children.length > 0 ? 'block' : 'none';
 });
 /*------------------------------------------------------------------*/
