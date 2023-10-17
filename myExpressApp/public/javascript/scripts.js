@@ -27,8 +27,6 @@ function toggleTextbox() {
 document.getElementById('e13602').addEventListener('input', function() {
     var results = document.getElementById('subjectAreaResults');
     var subSectionInput = document.getElementById('subSection');
-
-
     
     var subjectAreas = [];
     fetch('/majors')
@@ -36,8 +34,6 @@ document.getElementById('e13602').addEventListener('input', function() {
     .then(data => {
         subjectAreas = data.map(item => item.Major_name);
     
-        
-
     results.innerHTML = '';
     var inputValue = this.value.toLowerCase();
     
@@ -57,15 +53,35 @@ document.getElementById('e13602').addEventListener('input', function() {
     results.style.display = results.children.length > 0 ? 'block' : 'none';
 });
 
+//from here
+
 document.getElementById('subSection').addEventListener('input', function() {
     var results = document.getElementById('subjectResults');
     var subjectAreas = document.getElementById('e13602').value;
     var inputFieldUsers = document.getElementById('e13611');
 
     var subjects = [];
-    if (subjectAreas === 'COMP SCI - Computer Science') {
-        subjects = ['Information Technology Project', 'Statistical Machine Learning'];
-    }
+    var selected_subject = {"subject_name": "COMP SCI"};
+
+    let ahttp = new XMLHttpRequest();
+		ahttp.onreadystatechange = function () {
+			if (this.readyState == 4 && this.status == 200) {
+				const lis = this.responseText
+				const subs = JSON.parse(lis);
+				for (let i of subs) {
+					subjects.push(i);
+					console.log(i.subs);
+				}
+			}
+		};
+
+    ahttp.open("POST", "/subjects", true);
+    ahttp.setRequestHeader("Content-type", "application/json");
+    ahttp.send(JSON.stringify(selected_subject));
+
+    console.log(subjects);
+
+    // till here
 
     results.innerHTML = '';
     var inputValue = this.value.toLowerCase();
@@ -129,8 +145,7 @@ document.getElementById('subSection').addEventListener('input', function() {
 		};
 
 		xhttp.open("GET", "/softwares", true);
-		xhttp.send();
-		//applications.push(JSON.parse([{"software_name":"other","software_supplier":""}]));
+        xhttp.send();
 
 		appInput.addEventListener('input', function() {
 			const inputValue = this.value.toLowerCase();
