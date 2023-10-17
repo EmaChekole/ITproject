@@ -55,7 +55,7 @@ document.getElementById('e13602').addEventListener('input', function() {
 
 //from here
 
-document.getElementById('subSection').addEventListener('input', function() {
+document.getElementById('subSection').addEventListener('input', function() { // change this to only get called once after a subject area is chosen
     var results = document.getElementById('subjectResults');
     var subjectAreas = document.getElementById('e13602').value;
     var inputFieldUsers = document.getElementById('e13611');
