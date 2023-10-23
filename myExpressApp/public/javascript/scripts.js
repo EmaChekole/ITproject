@@ -34,84 +34,78 @@ document.getElementById('e13602').addEventListener('input', function() {
     .then(data => {
         subjectAreas = data.map(item => item.Major_name);
     
-    results.innerHTML = '';
-    var inputValue = this.value.toLowerCase();
+        results.innerHTML = '';
+        var inputValue = this.value.toLowerCase();
     
-    for(let subject of subjectAreas) {
-        if (subject.toLowerCase().includes(inputValue)) {
-            let div = document.createElement('div');
-            div.innerText = subject;
-            div.addEventListener('click', function() {
-                document.getElementById('e13602').value = subject;
-                results.style.display = 'none';
-                subSectionInput.disabled = false;
-            });
-            results.appendChild(div);
+        for(let subject of subjectAreas) {
+            if (subject.toLowerCase().includes(inputValue)) {
+                let div = document.createElement('div');
+                div.innerText = subject;
+                div.addEventListener('click', function() {
+                    document.getElementById('e13602').value = subject;
+                    results.style.display = 'none';
+                    subSectionInput.disabled = false;
+                });
+                results.appendChild(div);
+            }
         }
-    }
 
-    results.style.display = results.children.length > 0 ? 'block' : 'none';
+        results.style.display = results.children.length > 0 ? 'block' : 'none';
+    });
 });
 
-//from here
-
-document.getElementById('subSection').addEventListener('input', function() { // change this to only get called once after a subject area is chosen
+document.getElementById('subSection').addEventListener('input', function() {
     var results = document.getElementById('subjectResults');
-    var subjectAreas = document.getElementById('e13602').value;
+    var selectedSubjectArea = document.getElementById('e13602').value; 
     var inputFieldUsers = document.getElementById('e13611');
+    var inputValue = document.getElementById('subSection').value.toLowerCase();
 
     var subjects = [];
-    var selected_subject = {"subject_name": "COMP SCI"};
+    var selected_subject = {"subject_name": selectedSubjectArea};
 
     let ahttp = new XMLHttpRequest();
-		ahttp.onreadystatechange = function () {
-			if (this.readyState == 4 && this.status == 200) {
-				const lis = this.responseText
-				const subs = JSON.parse(lis);
-				for (let i of subs) {
-					subjects.push(i);
-					console.log(i.subs);
-				}
-			}
-		};
+    ahttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            const lis = this.responseText;
+            const subs = JSON.parse(lis);
+            for (let i of subs) {
+                subjects.push(i.Subject_name);
+            }
+
+            results.innerHTML = '';
+
+            for(let subject of subjects) {
+                if (subject.toLowerCase().includes(inputValue)) {
+                    let div = document.createElement('div');
+                    div.innerText = subject;
+                    div.addEventListener('click', function() {
+                        document.getElementById('subSection').value = subject;
+                        results.style.display = 'none';
+
+
+                        fetch("/studentCount", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ subject_name: subject })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            inputFieldUsers.value = data[0].student_enrol;
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                    results.appendChild(div);
+                }
+            }
+            results.style.display = results.children.length > 0 ? 'block' : 'none';
+        }
+    };
 
     ahttp.open("POST", "/subjects", true);
     ahttp.setRequestHeader("Content-type", "application/json");
     ahttp.send(JSON.stringify(selected_subject));
-
-    console.log(subjects);
-
-    // till here
-
-    results.innerHTML = '';
-    var inputValue = this.value.toLowerCase();
-
-    for(let subject of subjects) {
-        if (subject.toLowerCase().includes(inputValue)) {
-            let div = document.createElement('div');
-            div.innerText = subject;
-            div.addEventListener('click', function() {
-                document.getElementById('subSection').value = subject;
-                results.style.display = 'none';
-
-
-                switch (subject) {
-                    case 'Information Technology Project':
-                        inputFieldUsers.value = '150';
-                        break;
-                    case 'Statistical Machine Learning':
-                        inputFieldUsers.value = '200';
-                        break;
-                    default:
-                        inputFieldUsers.value = '';
-                        break;
-                }
-            });
-            results.appendChild(div);
-        }
-    }
-    });
-    results.style.display = results.children.length > 0 ? 'block' : 'none';
 });
 /*------------------------------------------------------------------*/
 
@@ -212,19 +206,18 @@ document.getElementById('subSection').addEventListener('input', function() { // 
 
 
 /*-------------------Adding Rooms---------------------------------------------*/
-
 document.addEventListener("DOMContentLoaded", function() {
     const roomListButton = document.getElementById("room_list_button");
     const roomResultsDiv = document.getElementById("room_results");
     const roomListUl = document.getElementById("room_list");
 
-    // Initialize rooms as an empty array
+
     let rooms = [];
 
     function roomAlreadyAdded(room) {
         const existingItems = roomListUl.querySelectorAll("li");
         for (let item of existingItems) {
-            if (item.firstChild.nodeValue === room) {  // This checks only the room name, ignoring child elements like buttons
+            if (item.firstChild.nodeValue === room) { 
                 return true;
             }
         }
@@ -233,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     function addRoomToList(room) {
-        // Check if the room is already added. If it is, simply return.
+
         if (roomAlreadyAdded(room)) {
             return;
         }
@@ -245,7 +238,7 @@ document.addEventListener("DOMContentLoaded", function() {
         removeBtn.textContent = "Remove";
         removeBtn.onclick = function() {
             roomListUl.removeChild(li);
-            renderRoomList();  // Update the room list after removing an item
+            renderRoomList();  
         };
     
         li.appendChild(removeBtn);
@@ -261,11 +254,11 @@ document.addEventListener("DOMContentLoaded", function() {
             
             if (roomAlreadyAdded(room)) {
                 resultDiv.style.opacity = "0.5";
-                resultDiv.style.pointerEvents = "none";  // Disables click events on this element
+                resultDiv.style.pointerEvents = "none";  
             } else {
                 resultDiv.onclick = function() {
                     addRoomToList(room);
-                    renderRoomList();  // Update the room list after adding an item
+                    renderRoomList();  
                 };
             }
 
@@ -273,15 +266,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Fetch rooms from the new API endpoint
+
     fetch("/rooms")
     
     .then(response => response.json())
     .then(data => {
-        // Populate the rooms array with the fetched building names
+ 
         rooms = data.map(item => item.Building_name + " - Room " + item.room_number);
 
-        // Render the room list for the first time when button is clicked
         roomListButton.addEventListener("click", function(event) {
             event.preventDefault();
             renderRoomList();

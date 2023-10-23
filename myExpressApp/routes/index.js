@@ -34,14 +34,11 @@ router.get('/buildings', function(req, res, next) {
 });
 
 router.get('/subjectAreas', function(req, res, next) {
-  //should get called every time when the page loads
   var query = "SELECT Major_name FROM major";
   useQuery(query,req,res);
 });
 
 router.post('/subjects', function(req, res, next) {
-  //called when user selects a subject area. 
-  //this will return all subjects in that subject area
   var query = "SELECT Major_id FROM major WHERE Major_name = " + "\"" + req.body.subject_name + "\"";
   req.pool.getConnection( function(err,connection) {
     if (err) {
@@ -51,7 +48,7 @@ router.post('/subjects', function(req, res, next) {
     }
 
     connection.query(query, function(err, rows, fields) {
-      connection.release(); // release connection
+      connection.release();
       if (err) {
         console.log(err);
         return;
@@ -66,7 +63,6 @@ router.post('/subjects', function(req, res, next) {
 });
 
 router.get('/softwares', function(req, res, next) {
-  //should get called every time to show all available software
   var query = "SELECT software_name, software_supplier FROM software";
   useQuery(query,req,res);
 });
@@ -85,6 +81,28 @@ router.get('/room', function(req, res, next) {
   var query = "SELECT r.room_number, b.Building_name FROM room r JOIN building b ON r.building_id = b.Building_id";
 
   useQuery(query, req, res);
+});
+
+router.post('/roomsForSubject', function(req, res, next) {
+  var subjectName = req.body.subject_name;
+
+  // Update the query based on the relationship between subject, class, and room in your DB
+  var query = `SELECT r.room_number, b.Building_name 
+               FROM room r 
+               JOIN class c ON r.room_id = c.room_id 
+               JOIN subject s ON c.subject_code = s.subject_code 
+               JOIN building b ON r.building_id = b.Building_id 
+               WHERE s.Subject_name = "${subjectName}"`;
+
+  useQuery(query, req, res);
+});
+
+router.post('/studentCount', function(req, res, next) {
+  var subjectName = req.body.subject_name;
+  var query = `SELECT student_enrol FROM subject WHERE Subject_name = "${subjectName}"`;
+
+  useQuery(query, req, res);
+  console.log("Query used:", query);
 });
 
 module.exports = router;
