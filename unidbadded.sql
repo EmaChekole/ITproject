@@ -1,5 +1,5 @@
 CREATE DATABASE  IF NOT EXISTS `unidb`;
-use unidb;
+USE `unidb`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: unidb
@@ -176,7 +176,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (16,'computer lab',150,'B',1),(19,'computer lab',50,'B',1),(50,'seminar',300,'5',2),(102,'workshop',100,'1',5),(109,'workshop',100,'1',5),(111,'workshop',100,'1',5),(119,'seminar',750,'1',6),(128,'seminar',700,'1',6),(188,'compter lab',30,'1',1),(211,'computer lab',200,'2',1),(222,'workshop',200,'2',1),(322,'Seminar',1000,'2',3),(410,'workshop',200,'4',7),(441,'workshop',50,'4',4),(442,'workshop',100,'4',7);
+INSERT INTO `room` VALUES (16,'computer lab',150,'B',1),(19,'computer lab',50,'B',1),(50,'seminar',300,'5',2),(102,'workshop',100,'1',5),(109,'workshop',100,'1',5),(111,'workshop',100,'1',5),(119,'seminar',750,'1',6),(128,'seminar',700,'1',6),(188,'computer lab',30,'1',1),(211,'computer lab',200,'2',1),(222,'workshop',200,'2',1),(322,'Seminar',1000,'2',3),(410,'workshop',200,'4',7),(441,'workshop',50,'4',4),(442,'workshop',100,'4',7);
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -331,4 +331,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-23 21:47:55
+-- Dump completed on 2023-10-23 23:08:16
