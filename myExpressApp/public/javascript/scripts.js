@@ -116,84 +116,97 @@ document.getElementById('subSection').addEventListener('input', function() {
 
 
 /*--------Selecting Application and Autofilling App name, Software Supplier, Obtaining -------------------------*/
+document.addEventListener("DOMContentLoaded", function() {
+    const appInput = document.getElementById("e13600");
+    const resultsDiv = document.getElementById("appResults");
+    const appNameInput = document.getElementById("e13601");
+    const softwareSupplierInput = document.getElementById("e13595");
+    const obtainingMediaTextarea = document.getElementById("e13587");
+    const newAppPrompt = document.getElementById('newAppPrompt');
+    const createNewAppBtn = document.getElementById("createNewApp"); // New button
 
-	document.addEventListener("DOMContentLoaded", function() {
-		const appInput = document.getElementById("e13600");
-		const resultsDiv = document.getElementById("appResults");
-		const appNameInput = document.getElementById("e13601");
-		const softwareSupplierInput = document.getElementById("e13595");
-		const obtainingMediaTextarea = document.getElementById("e13587");
-		const newAppPrompt = document.getElementById('newAppPrompt');
+    const applications = [];
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            const lis = this.responseText;
+            const software_list = JSON.parse(lis);
+            for (let i of software_list) {
+                applications.push(i);
+                console.log(i.software_name);
+            }
+        }
+    };
 
-		const applications = [];
-		let xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function () {
-			if (this.readyState == 4 && this.status == 200) {
-				const lis = this.responseText
-				const software_list = JSON.parse(lis);
-				for (let i of software_list) {
-					applications.push(i);
-					console.log(i.software_name);
-				}
-			}
-		};
+    xhttp.open("GET", "/softwares", true);
+    xhttp.send();
 
-		xhttp.open("GET", "/softwares", true);
-        xhttp.send();
+    appInput.addEventListener('input', function() {
+        const inputValue = this.value.toLowerCase();
+        resultsDiv.innerHTML = '';
 
-		appInput.addEventListener('input', function() {
-			const inputValue = this.value.toLowerCase();
-			resultsDiv.innerHTML = '';
+        for (let app of applications) {
+            if (app.software_name.toLowerCase().includes(inputValue)) {
+                let div = document.createElement('div');
+                div.innerText = app.software_name;
+                div.addEventListener('click', function() {
+                    appInput.value = app.software_name;
+                    resultsDiv.style.display = 'none';
+                    newAppPrompt.style.display = 'none';
 
-			for (let app of applications) {
-				if (app.software_name.toLowerCase().includes(inputValue)) {
-					let div = document.createElement('div');
-					div.innerText = app.software_name;
-					div.addEventListener('click', function() {
-						appInput.value = app.software_name;
-						resultsDiv.style.display = 'none';
-						newAppPrompt.style.display = 'none';
+                    if (app.software_name === "Other") {
+                        appNameInput.removeAttribute("disabled");
+                        softwareSupplierInput.removeAttribute("disabled");
+                        obtainingMediaTextarea.removeAttribute("disabled");
+                        appNameInput.value = "";
+                        softwareSupplierInput.value = "";
+                        obtainingMediaTextarea.value = "";
+                    } else {
+                        appNameInput.setAttribute("disabled", "disabled");
+                        softwareSupplierInput.removeAttribute("disabled");
+                        obtainingMediaTextarea.removeAttribute("disabled");
+                        appNameInput.value = app.software_name;
+                        softwareSupplierInput.value = app.software_supplier;
+                        obtainingMediaTextarea.value = app.media;
+                    }
+                });
+                resultsDiv.appendChild(div);
+            }
+        }
 
-						if (app.software_name === "Other") {
-							appNameInput.removeAttribute("disabled");
-							softwareSupplierInput.removeAttribute("disabled");
-							obtainingMediaTextarea.removeAttribute("disabled");
-							appNameInput.value = "";
-							softwareSupplierInput.value = "";
-							obtainingMediaTextarea.value = "";
-						} else {
-							appNameInput.setAttribute("disabled", "disabled");
-							softwareSupplierInput.removeAttribute("disabled");
-							obtainingMediaTextarea.removeAttribute("disabled");
-							appNameInput.value = app.software_name;
-							softwareSupplierInput.value = app.software_supplier;
-							obtainingMediaTextarea.value = app.media;
-						}
-					});
-					resultsDiv.appendChild(div);
-				}
-			}
+        resultsDiv.style.display = resultsDiv.children.length > 0 ? 'block' : 'none';
 
-			resultsDiv.style.display = resultsDiv.children.length > 0 ? 'block' : 'none';
+        if (resultsDiv.children.length == 0 && this.value.trim() != "") {
+            newAppPrompt.style.display = 'block';
+        } else {
+            newAppPrompt.style.display = 'none';
+        }
+    });
 
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#e13600')) {
+            resultsDiv.style.display = 'none';
+            if (appInput.value.trim() == "") {
+                newAppPrompt.style.display = 'none';
+            }
+        }
+    });
 
-			if (resultsDiv.children.length == 0 && this.value.trim() != "") {
-				newAppPrompt.style.display = 'block';
-			} else {
-				newAppPrompt.style.display = 'none';
-			}
-		});
-
-		document.addEventListener('click', function(event) {
-			if (!event.target.closest('#e13600')) {
-				resultsDiv.style.display = 'none';
-				if (appInput.value.trim() == "") {
-					newAppPrompt.style.display = 'none';
-				}
-			}
-		});
-	});
-
+    // Handle the "Create New Application" button click
+    createNewAppBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+    
+        appNameInput.removeAttribute("disabled");
+        softwareSupplierInput.removeAttribute("disabled");
+        obtainingMediaTextarea.removeAttribute("disabled");
+        appNameInput.value = "";
+        softwareSupplierInput.value = "";
+        obtainingMediaTextarea.value = "";
+        appInput.value = "Other";  // Set the value to "Other" to indicate a new application
+        resultsDiv.style.display = 'none';
+        newAppPrompt.style.display = 'none';
+    });
+});
 /*-----------------------------------------------------------------*/
 
 
