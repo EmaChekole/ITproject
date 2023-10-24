@@ -63,7 +63,7 @@ router.post('/subjects', function(req, res, next) {
 });
 
 router.get('/softwares', function(req, res, next) {
-  var query = "SELECT software_name, software_supplier FROM software";
+  var query = "SELECT s.software_name, s.software_supplier, v.version FROM software s JOIN softwareversion v ON s.software_id = v.software_id";
   useQuery(query,req,res);
 });
 
@@ -104,5 +104,7 @@ router.post('/studentCount', function(req, res, next) {
   useQuery(query, req, res);
   console.log("Query used:", query);
 });
+
+
 
 module.exports = router;
