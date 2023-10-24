@@ -335,79 +335,51 @@ For assistance completing this form please contact <span class="caps">ITDS</span
 <!---------------------------Selecting Application and Autofilling App name, Software Supplier, Obtaining Software------------------------------------------>
 
 
-  <tr id="row_e13601">    <td colspan="2" style="text-align:left;"><p>For the application you wish to have installed, please choose the name of any pre-existing application or select "Other" to request a new one.</p></td>
+<tr id="row_e13601">
+  <td colspan="2" style="text-align:left;"><p>For the application you wish to have installed, please choose the name of any pre-existing application or select "Other" to request a new one.</p></td>
 </tr>
-
-
-
 <tr id="row_e13600">
-    <th style="vertical-align: top;">
-        <label for="e13600">Choose an Application<span class="required">*</span></label>
-    </th>
-    <td data-th='Application Name'>
-        <input type="text" name="e13600" id="e13600" placeholder="Start typing...">
-        <div id="appResults" class="results"></div>
-        <p id="newAppPrompt" style="display: none;">If your application is not on the list, please select "Other" to enter a new one.</p>
-    </td>
+  <th style="vertical-align: top;">
+      <label for="e13600">Choose an Application<span class="required">*</span></label>
+  </th>
+  <td data-th='Application Name'>
+      <input type="text" name="e13600" id="e13600" placeholder="Start typing...">
+      <button id="createNewApp" type="button">New Software</button>
+      <div id="appResults" class="results"></div>
+      <p id="newAppPrompt" style="display: none;">If your application is not on the list, please select "New Software" to enter a new one.</p>
+  </td>
 </tr>
-
 <tr id="row_e136001">
-    <th style="vertical-align: top;">
-        <label for="e13601">Application Name<span class="required">*</span></label>
-    </th>
-    <td data-th='Application Name'>
-        <input type="text" name="e13601" id="e13601" value="" size="50" onchange="" disabled />
-    </td>
+  <th style="vertical-align: top;">
+      <label for="e13601">Application Name<span class="required">*</span></label>
+  </th>
+  <td data-th='Application Name'>
+      <input type="text" name="e13601" id="e13601" value="" size="50" onchange="" disabled />
+  </td>
 </tr>
-
-
-
-
-
-
-
-
-    <tr id="row_e13595">
-		<th style="vertical-align: top;">
-		<label for="e13595">
-		<a data-popup="yes" href="/submit_help/13595"><img border="0" vspace="0" hspace="0" align="right" alt="[?]" title="Which company or who sells the software?" src="/assets/help01-33fd212a0b8f489fc34bfcb06add23d9dbfb1326b4f36c65b687418081ac888f.gif" width="15" height="15" /></a>
-		Software Supplier
-    </span>
-
-  
-
-
-    </label>
+<tr id="row_e13595">
+  <th style="vertical-align: top;">
+      <label for="e13595">
+          <a data-popup="yes" href="/submit_help/13595"><img border="0" vspace="0" hspace="0" align="right" alt="[?]" title="The point of contact." src="/assets/help01-33fd212a0b8f489fc34bfcb06add23d9dbfb1326b4f36c65b687418081ac888f.gif" width="15" height="15" /></a>
+          Software Supplier
+      </label>
   </th>
   <td data-th='Software Supplier'>
-        <input type="text" name="e13595" id="e13595" value="" size="20" onchange="" disabled />
-
-
-
-    </td>
-  </tr>
-
-      <tr id="row_e13587">
-    <th style="vertical-align: top;">
-    <label for="e13587">
-      <a data-popup="yes" href="/submit_help/13587"><img border="0" vspace="0" hspace="0" align="right" alt="[?]" title="How do we obtain the media? 
+      <input type="text" name="e13595" id="e13595" value="" size="20" onchange="" disabled />
+  </td>
+</tr>
+<tr id="row_e13587">
+  <th style="vertical-align: top;">
+      <label for="e13587">
+          <a data-popup="yes" href="/submit_help/13587"><img border="0" vspace="0" hspace="0" align="right" alt="[?]" title="How do we obtain the media? 
 Example: Supplier/Physical/Website-login details etc" src="/assets/help01-33fd212a0b8f489fc34bfcb06add23d9dbfb1326b4f36c65b687418081ac888f.gif" width="15" height="15" /></a>
-    Obtaining Media
-      </span>
-
-  
-
-
-    </label>
+          Obtaining Media
+      </label>
   </th>
   <td data-th='Obtaining Media'>
-        <textarea name="e13587" id="e13587" rows="5" cols="40" onchange="">
-</textarea>
-
-
-
-    </td>
-  </tr>
+      <textarea name="e13587" id="e13587" rows="5" cols="40" onchange=""></textarea>
+  </td>
+</tr>
 
 
 
