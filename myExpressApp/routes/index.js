@@ -39,6 +39,13 @@ router.get('/subjectAreas', function(req, res, next) {
 });
 
 router.post('/subjects', function(req, res, next) {
+
+  const lettersAndNumbersPattern = /^[A-Za-z0-9 ]+$/;
+
+  if(!req.body.subject_name.match(lettersAndNumbersPattern)){
+    return res.status(400).json({ err: "No special characters please!"})
+  }
+
   var query = "SELECT Major_id FROM major WHERE Major_name = " + "\"" + req.body.subject_name + "\"";
   req.pool.getConnection( function(err,connection) {
     if (err) {
@@ -87,6 +94,13 @@ router.get('/room', function(req, res, next) {
   useQuery(query, req, res);
 });
 router.post('/roomsForSubject', function(req, res, next) {
+
+  const lettersAndNumbersPattern = /^[A-Za-z0-9 ]+$/;
+
+  if(!req.body.subject_name.match(lettersAndNumbersPattern)){
+    return res.status(400).json({ err: "No special characters please!"})
+  }
+
   var subjectName = req.body.subject_name;
   var query = `
       SELECT DISTINCT r.room_number, r.room_type, b.Building_name 
@@ -100,6 +114,12 @@ router.post('/roomsForSubject', function(req, res, next) {
 
 
 router.post('/studentCount', function(req, res, next) {
+  const lettersAndNumbersPattern = /^[A-Za-z0-9 ]+$/;
+
+  if(!req.body.subject_name.match(lettersAndNumbersPattern)){
+    return res.status(400).json({ err: "No special characters please!"})
+  }
+  
   var subjectName = req.body.subject_name;
   var query = `SELECT student_enrol FROM subject WHERE Subject_name = "${subjectName}"`;
 
