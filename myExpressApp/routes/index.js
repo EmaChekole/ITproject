@@ -63,7 +63,11 @@ router.post('/subjects', function(req, res, next) {
 });
 
 router.get('/softwares', function(req, res, next) {
-  var query = "SELECT s.software_name, s.software_supplier, v.version FROM software s JOIN softwareversion v ON s.software_id = v.software_id";
+  var query = `
+    SELECT s.software_name, s.software_supplier, sv.version 
+    FROM software s 
+    LEFT JOIN softwareversion sv ON s.software_id = sv.software_id
+  `;
   useQuery(query,req,res);
 });
 
@@ -82,20 +86,18 @@ router.get('/room', function(req, res, next) {
 
   useQuery(query, req, res);
 });
-
 router.post('/roomsForSubject', function(req, res, next) {
   var subjectName = req.body.subject_name;
-
-  // Update the query based on the relationship between subject, class, and room in your DB
-  var query = `SELECT r.room_number, b.Building_name 
-               FROM room r 
-               JOIN class c ON r.room_id = c.room_id 
-               JOIN subject s ON c.subject_code = s.subject_code 
-               JOIN building b ON r.building_id = b.Building_id 
-               WHERE s.Subject_name = "${subjectName}"`;
-
+  var query = `
+      SELECT DISTINCT r.room_number, r.room_type, b.Building_name 
+      FROM room r 
+      JOIN building b ON r.building_id = b.Building_id
+      JOIN class c ON c.room_number = r.room_number
+      WHERE c.Subject_code = (SELECT Subject_code FROM subject WHERE Subject_name = "${subjectName}");
+  `;
   useQuery(query, req, res);
 });
+
 
 router.post('/studentCount', function(req, res, next) {
   var subjectName = req.body.subject_name;
@@ -104,7 +106,5 @@ router.post('/studentCount', function(req, res, next) {
   useQuery(query, req, res);
   console.log("Query used:", query);
 });
-
-
 
 module.exports = router;

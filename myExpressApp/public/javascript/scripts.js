@@ -22,8 +22,7 @@ function toggleTextbox() {
 
 
 
-/*---------------------SUBJECT AREA, Subject, Number of Users---------------------*/
-
+/*---------------------SUBJECT AREA, Subject, Number of Users, Adding Rooms---------------------*/
 document.getElementById('e13602').addEventListener('input', function() {
     var results = document.getElementById('subjectAreaResults');
     var subSectionInput = document.getElementById('subSection');
@@ -56,7 +55,7 @@ document.getElementById('e13602').addEventListener('input', function() {
 
 document.getElementById('subSection').addEventListener('input', function() {
     var results = document.getElementById('subjectResults');
-    var selectedSubjectArea = document.getElementById('e13602').value; 
+    var selectedSubjectArea = document.getElementById('e13602').value;  
     var inputFieldUsers = document.getElementById('e13611');
     var inputValue = document.getElementById('subSection').value.toLowerCase();
 
@@ -82,6 +81,13 @@ document.getElementById('subSection').addEventListener('input', function() {
                         document.getElementById('subSection').value = subject;
                         results.style.display = 'none';
 
+                        // Clear the rooms list and visual cues when a new subject is selected
+                        document.getElementById('room_list').innerHTML = '';
+                        var roomResultsDivs = document.getElementById('room_results').querySelectorAll('div');
+                        roomResultsDivs.forEach(function(div) {
+                            div.style.backgroundColor = '';  
+                            div.style.border = '';
+                        });
 
                         fetch("/studentCount", {
                             method: "POST",
@@ -93,6 +99,20 @@ document.getElementById('subSection').addEventListener('input', function() {
                         .then(response => response.json())
                         .then(data => {
                             inputFieldUsers.value = data[0].student_enrol;
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                        // Fetch the rooms for the selected subject
+                        fetch("/roomsForSubject", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ subject_name: subject })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            displayRooms(data);
                         })
                         .catch(error => console.error('Error:', error));
                     });
@@ -107,6 +127,70 @@ document.getElementById('subSection').addEventListener('input', function() {
     ahttp.setRequestHeader("Content-type", "application/json");
     ahttp.send(JSON.stringify(selected_subject));
 });
+
+function displayRooms(rooms) {
+    var roomResults = document.getElementById('room_results');
+    roomResults.innerHTML = '';
+
+    for(let room of rooms) {
+        let div = document.createElement('div');
+        div.innerText = room.Building_name + " - " + room.room_type + " - Room " + room.room_number;
+        div.addEventListener('click', function() {
+            var roomList = document.getElementById('room_list');
+            var roomText = room.Building_name + " - " + room.room_type + " - Room " + room.room_number;
+        
+            // Check if the room is already in the list
+            var matchingLi = Array.from(roomList.querySelectorAll('li')).find(li => li.innerText.startsWith(roomText));
+            
+            if (matchingLi) {
+                // If room is already in the list, remove it and revert the visual cues
+                roomList.removeChild(matchingLi);
+                div.style.backgroundColor = '';  
+                div.style.border = '';
+            } else {
+                // If room is not in the list, add it and add the visual cues
+                div.style.backgroundColor = '#e0e0e0';  
+                div.style.border = '1px solid #000';
+        
+                var li = document.createElement('li');
+                li.innerText = roomText;
+        
+                // Add a remove button
+                var removeBtn = document.createElement('button');
+                removeBtn.innerText = "Remove";
+                removeBtn.addEventListener('click', function() {
+                    roomList.removeChild(li);
+        
+                    // Revert the visual cue when the room is removed from the list
+                    div.style.backgroundColor = '';  
+                    div.style.border = '';
+                });
+                li.appendChild(removeBtn);
+        
+                roomList.appendChild(li);
+            }
+        });
+        
+        roomResults.appendChild(div);
+    }
+    roomResults.style.display = roomResults.children.length > 0 ? 'block' : 'none';
+}
+
+document.getElementById('e13602').addEventListener('change', function() {
+    // Clear the subSection input field
+    document.getElementById('subSection').value = '';
+    
+    // Clear the rooms list
+    document.getElementById('room_list').innerHTML = '';
+    
+    // If you have any visual cues or styles for rooms in room_results, you'll also need to clear them
+    var roomResultsDivs = document.getElementById('room_results').querySelectorAll('div');
+    roomResultsDivs.forEach(function(div) {
+        div.style.backgroundColor = '';  
+        div.style.border = '';
+    });
+});
+
 /*------------------------------------------------------------------*/
 
 
@@ -148,12 +232,17 @@ document.addEventListener("DOMContentLoaded", function() {
         for (let app of applications) {
             if (app.software_name.toLowerCase().includes(inputValue)) {
                 let div = document.createElement('div');
-                div.innerText = app.software_name;
+                div.innerText = app.software_name + (app.version ? " (" + app.version + ")" : "");  // Display version if available
                 div.addEventListener('click', function() {
-                    appInput.value = app.software_name;
+                    // Concatenate software name with version (if available) for display
+                    const softwareDisplayText = app.software_name + (app.version ? " (" + app.version + ")" : "");
+                
+                    appInput.value = softwareDisplayText;
+                    appNameInput.value = softwareDisplayText;  // Update appNameInput with software name and version
+                
                     resultsDiv.style.display = 'none';
                     newAppPrompt.style.display = 'none';
-
+                
                     if (app.software_name === "Other") {
                         appNameInput.removeAttribute("disabled");
                         softwareSupplierInput.removeAttribute("disabled");
@@ -165,9 +254,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         appNameInput.setAttribute("disabled", "disabled");
                         softwareSupplierInput.removeAttribute("disabled");
                         obtainingMediaTextarea.removeAttribute("disabled");
-                        appNameInput.value = app.software_name;
                         softwareSupplierInput.value = app.software_supplier;
-                        obtainingMediaTextarea.value = app.media;
+                    
                     }
                 });
                 resultsDiv.appendChild(div);
@@ -216,82 +304,3 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-
-
-/*-------------------Adding Rooms---------------------------------------------*/
-document.addEventListener("DOMContentLoaded", function() {
-    const roomListButton = document.getElementById("room_list_button");
-    const roomResultsDiv = document.getElementById("room_results");
-    const roomListUl = document.getElementById("room_list");
-
-
-    let rooms = [];
-
-    function roomAlreadyAdded(room) {
-        const existingItems = roomListUl.querySelectorAll("li");
-        for (let item of existingItems) {
-            if (item.firstChild.nodeValue === room) { 
-                return true;
-            }
-        }
-        return false;
-    }
-    
-
-    function addRoomToList(room) {
-
-        if (roomAlreadyAdded(room)) {
-            return;
-        }
-    
-        const li = document.createElement("li");
-        li.textContent = room;
-    
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "Remove";
-        removeBtn.onclick = function() {
-            roomListUl.removeChild(li);
-            renderRoomList();  
-        };
-    
-        li.appendChild(removeBtn);
-        roomListUl.appendChild(li);
-    }
-
-    function renderRoomList() {
-        roomResultsDiv.innerHTML = '';
-
-        rooms.forEach(room => {
-            const resultDiv = document.createElement("div");
-            resultDiv.textContent = room;
-            
-            if (roomAlreadyAdded(room)) {
-                resultDiv.style.opacity = "0.5";
-                resultDiv.style.pointerEvents = "none";  
-            } else {
-                resultDiv.onclick = function() {
-                    addRoomToList(room);
-                    renderRoomList();  
-                };
-            }
-
-            roomResultsDiv.appendChild(resultDiv);
-        });
-    }
-
-
-    fetch("/rooms")
-    
-    .then(response => response.json())
-    .then(data => {
- 
-        rooms = data.map(item => item.Building_name + " - Room " + item.room_number);
-
-        roomListButton.addEventListener("click", function(event) {
-            event.preventDefault();
-            renderRoomList();
-        });
-    });
-
-});
-/*------------------------------------------------------------------*/
