@@ -14,11 +14,10 @@ function toggleTextbox() {
 }
 /*------------------------------------------------------------------*/
 
-
-
-
-
-
+document.getElementById('commit_11296').addEventListener('click', function() {
+    alert('You have submitted the form');
+    window.location.reload();
+  });
 
 
 
